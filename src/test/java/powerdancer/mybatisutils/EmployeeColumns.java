@@ -6,21 +6,19 @@ public enum EmployeeColumns implements Column {
     JOIN_TIME(true),
     SUPERVISOR_ID;
 
-    final boolean indexed;
-    final String alias;
+    final ColumnMeta meta;
 
     EmployeeColumns() {
-        this(false);
+        this.meta = ColumnMeta.nonIndexed(name().replaceAll("_", ""));
     }
 
-    EmployeeColumns(boolean indexed) {
-        this.indexed = indexed;
-        alias = name().replaceAll("_", "");
+    EmployeeColumns(ColumnMeta meta) {
+        this.meta = meta;
     }
 
     @Override
-    public String alias() {
-        return alias;
+    public ColumnMeta meta() {
+        return meta;
     }
 
     static ColumnMethodMapper methodMapper = ColumnMethodMapper.forAccessorInterface(EmployeeColumns.class, Employee.class);
