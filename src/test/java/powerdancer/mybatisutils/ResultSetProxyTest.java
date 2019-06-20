@@ -1,5 +1,6 @@
 package powerdancer.mybatisutils;
 
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.apache.ibatis.mapping.Environment;
 import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
@@ -77,21 +78,21 @@ public class ResultSetProxyTest {
             mapper.insert(1, "powerdancer", Instant.EPOCH, null);
             mapper.insert(2, "carolina", Instant.EPOCH.plus(Duration.ofMinutes(1)), 1L);
 
-            List<Employee> employees = mapper.find(
+            List<Employee> employees = mapper.slowFind(
                     JOIN_TIME,
                     true
             );
             assertPowerDancer(employees.get(0));
             assertCarolina(employees.get(1));
 
-            employees = mapper.find(
+            employees = mapper.slowFind(
                     JOIN_TIME,
                     false
             );
             assertPowerDancer(employees.get(1));
             assertCarolina(employees.get(0));
 
-            employees = mapper.find(
+            employees = mapper.slowFind(
                     JOIN_TIME,
                     true,
                     Filter.of(SUPERVISOR_ID, Operator.EQ, 1)
@@ -99,7 +100,7 @@ public class ResultSetProxyTest {
             Assertions.assertEquals(1, employees.size());
             assertCarolina(employees.get(0));
 
-            employees = mapper.find(
+            employees = mapper.slowFind(
                     JOIN_TIME,
                     true,
                     Filter.of(SUPERVISOR_ID, Operator.EQ, null)
@@ -107,7 +108,7 @@ public class ResultSetProxyTest {
             Assertions.assertEquals(1, employees.size());
             assertPowerDancer(employees.get(0));
 
-            employees = mapper.find(
+            employees = mapper.slowFind(
                     JOIN_TIME,
                     true,
                     Filter.of(SUPERVISOR_ID, Operator.EQ, null),
@@ -116,7 +117,7 @@ public class ResultSetProxyTest {
             Assertions.assertEquals(1, employees.size());
             assertPowerDancer(employees.get(0));
 
-            employees = mapper.find(
+            employees = mapper.slowFind(
                     JOIN_TIME,
                     true,
                     Filter.of(SUPERVISOR_ID, Operator.EQ, null),
@@ -124,7 +125,7 @@ public class ResultSetProxyTest {
             );
             Assertions.assertEquals(0, employees.size());
 
-            employees = mapper.find(
+            employees = mapper.slowFind(
                     JOIN_TIME,
                     true,
                     Filter.of(SUPERVISOR_ID, Operator.EQ, null),
@@ -134,7 +135,7 @@ public class ResultSetProxyTest {
             assertPowerDancer(employees.get(0));
             assertCarolina(employees.get(1));
 
-            employees = mapper.find(
+            employees = mapper.slowFind(
                     JOIN_TIME,
                     true,
                     Filter.of(JOIN_TIME, Operator.GREATER_THAN, Instant.EPOCH)
@@ -142,12 +143,20 @@ public class ResultSetProxyTest {
             Assertions.assertEquals(1, employees.size());
             assertCarolina(employees.get(0));
 
-            employees = mapper.find(
+            employees = mapper.slowFind(
                     JOIN_TIME,
                     true,
                     Filter.of(JOIN_TIME, Operator.LESS_THAN, Instant.EPOCH)
             );
             Assertions.assertEquals(0, employees.size());
+
+            Assertions.assertThrows(PersistenceException.class, ()->
+                    mapper.find(
+                            JOIN_TIME,
+                            true,
+                            Filter.of(SUPERVISOR_ID, Operator.LESS_THAN, 100)
+            ));
+
         }
     }
 

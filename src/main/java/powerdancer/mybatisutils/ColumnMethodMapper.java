@@ -13,7 +13,7 @@ public interface ColumnMethodMapper {
     Method[] methods();
 
     default String dbSelectList() {
-        return Arrays.stream(columns()).map(c-> c.name() + " " + c.alias()).collect(Collectors.joining(","));
+        return Arrays.stream(columns()).map(c-> c.name() + " " + c.meta().alias()).collect(Collectors.joining(","));
     }
 
     static ColumnMethodMapper forAccessorInterface(Class<? extends Column> columnEnumClass, Class interfaceClass) {
@@ -22,7 +22,7 @@ public interface ColumnMethodMapper {
                 .filter(method->!method.isDefault())
                 .collect(
                 Collectors.toMap(
-                        method -> Arrays.stream(cols).filter(c -> c.alias().toUpperCase().equals(method.getName().toUpperCase())).findFirst().orElseThrow(()->new IllegalStateException("Unable to find column for accessor " + method.getName())),
+                        method -> Arrays.stream(cols).filter(c -> c.meta().alias().toUpperCase().equals(method.getName().toUpperCase())).findFirst().orElseThrow(()->new IllegalStateException("Unable to find column for accessor " + method.getName())),
                         method -> method
                 )
         );
