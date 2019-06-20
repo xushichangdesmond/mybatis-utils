@@ -78,14 +78,14 @@ public class ResultSetProxyTest {
             mapper.insert(1, "powerdancer", Instant.EPOCH, null);
             mapper.insert(2, "carolina", Instant.EPOCH.plus(Duration.ofMinutes(1)), 1L);
 
-            List<Employee> employees = mapper.slowFind(
+            List<Employee> employees = mapper.find(
                     JOIN_TIME,
                     true
             );
             assertPowerDancer(employees.get(0));
             assertCarolina(employees.get(1));
 
-            employees = mapper.slowFind(
+            employees = mapper.find(
                     JOIN_TIME,
                     false
             );
