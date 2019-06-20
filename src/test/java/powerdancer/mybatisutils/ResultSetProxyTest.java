@@ -161,7 +161,7 @@ public class ResultSetProxyTest {
                     mapper.find(
                             JOIN_TIME,
                             true,
-                            Filter.of(JOIN_TIME, Operator.LESS_THAN, Instant.EPOCH)
+                            Filter.of(SUPERVISOR_ID, Operator.LESS_THAN, 100)
             ));
 
         }

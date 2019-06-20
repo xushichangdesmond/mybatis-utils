@@ -3,9 +3,9 @@ package powerdancer.mybatisutils;
 import java.util.function.Function;
 
 public class ColumnMetaBuilder {
-    Function serializer;
-    Function deserializer;
-    boolean indexed;
+    Function serializer = Function.identity();
+    Function deserializer = Function.identity();
+    boolean indexed = false;
     String alias;
 
     public static ColumnMeta build(Function serializer, Function deserializer, boolean indexed, String alias) {

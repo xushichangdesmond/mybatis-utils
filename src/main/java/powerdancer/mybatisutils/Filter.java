@@ -90,6 +90,30 @@ public interface Filter<T> {
         return sql;
     }
 
+    static <T extends Enum> Filter unmarshalFrom(Class<T> columnEnumClass, Object... params) {
+        Column col = (Column) Enum.valueOf(columnEnumClass, params[0].toString());
+        Operator operator = Operator.valueOf(params[1].toString());
+        if (operator == null) throw new IllegalArgumentException(params[1] + " is not a valid operator name");
+        Object[] operands = IntStream.range(2, params.length).mapToObj(i->col.meta().deserializer().apply(params[i])).toArray();
+
+        return new Filter() {
+            @Override
+            public Column col() {
+                return col;
+            }
+
+            @Override
+            public Operator operator() {
+                return operator;
+            }
+
+            @Override
+            public Object[] operands() {
+                return operands;
+            }
+        };
+    }
+
     class NotIndexedColumnException extends RuntimeException {
         final Column column;
         NotIndexedColumnException(Column col) {
